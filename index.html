@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aeson Retail Solutions | Freight Operations Platform</title>
+    <meta
+      name="description"
+      content="Modernized freight workflow for shipments, customer and carrier management, BOL generation, and route sheet delivery planning."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <section class="login-shell">
+        <div class="login-visual card">
+          <div class="road-glow"></div>
+          <div class="truck-panel">
+            <div class="truck-cab"></div>
+            <div class="truck-window"></div>
+            <div class="truck-chrome"></div>
+          </div>
+          <div class="login-copy">
+            <p class="eyebrow">Aeson Retail Solutions</p>
+            <h1>Modernize the Excel-born freight workflow without losing the logic that already works.</h1>
+            <p>
+              The new platform keeps the original flow from your workbook and older site:
+              create shipments, generate BOLs, assign trucking companies, and publish route
+              sheets for drivers.
+            </p>
+          </div>
+        </div>
+
+        <div class="login-panel card">
+          <p class="eyebrow">Legacy flow, modernized</p>
+          <h2>Sign in to the operations workspace</h2>
+          <div class="login-form-grid">
+            <label>
+              Email
+              <input id="login-email" type="email" value="dispatch@aesonretailsolutions.com" />
+            </label>
+            <label>
+              Password
+              <input id="login-password" type="password" value="************" />
+            </label>
+          </div>
+          <div class="login-actions">
+            <label class="checkbox-row">
+              <input type="checkbox" checked />
+              <span>Remember me</span>
+            </label>
+            <button id="login-button" class="button button-primary" type="button">Open Platform</button>
+          </div>
+          <div class="login-links">
+            <span>LTL / Consolidation</span>
+            <span>Truckload</span>
+            <span>Drayage</span>
+            <span>Store Delivery</span>
+            <span>Route Sheets</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="workspace" class="platform-shell">
+        <aside class="sidebar">
+          <div class="sidebar-brand">
+            <span>ARS</span>
+            <small>Freight Ops Platform</small>
+          </div>
+          <nav class="sidebar-nav" aria-label="Primary">
+            <a href="#company-screen">Company Select</a>
+            <a href="#packing-screen">Packing Slip</a>
+            <a href="#entry-screen">Shipment Form</a>
+            <a href="#customer-screen">Customers</a>
+            <a href="#carrier-screen">Carriers</a>
+            <a href="#bol-screen">BOL Queue</a>
+            <a href="#route-screen">Route Sheet</a>
+            <a href="#mobile-screen">Driver Mobile</a>
+            <a href="#preview-screen">Print Preview</a>
+          </nav>
+          <div class="sidebar-note">
+            <p class="eyebrow">Workbook Modules</p>
+            <p>
+              Enter Packing Slip, BOL Input, Customer Lookup, CDS carrier/customer data,
+              and Truck Run routing are all represented in this rebuild.
+            </p>
+          </div>
+        </aside>
+
+        <main class="workspace-main">
+          <header class="workspace-topbar card">
+            <div>
+              <p class="eyebrow">Dashboard &amp; Statistics</p>
+              <h2>One cleaner system for shipment intake, carrier assignment, and delivery routing.</h2>
+            </div>
+            <div class="topbar-meta">
+              <span class="meta-pill">User: Prathab Kandasamy</span>
+              <span class="meta-pill">Role: Tenant Admin</span>
+              <span id="tenant-mode-pill" class="meta-pill">Tenant Mode: Single-company workspace</span>
+              <span class="meta-pill">Date: <span id="today-label">Apr 6, 2026</span></span>
+            </div>
+          </header>
+
+          <section class="flow-strip">
+            <article class="card flow-card">
+              <span class="flow-index">01</span>
+              <div>
+                <h3>Select Company</h3>
+                <p>Load the right customer portfolio and operational data set first.</p>
+              </div>
+            </article>
+            <article class="card flow-card">
+              <span class="flow-index">02</span>
+              <div>
+                <h3>Create Shipment</h3>
+                <p>Capture the batch, PO, order, freight specs, delivery timing, and department.</p>
+              </div>
+            </article>
+            <article class="card flow-card">
+              <span class="flow-index">03</span>
+              <div>
+                <h3>Generate BOL</h3>
+                <p>Turn the shipment into a printable bill of lading with lookup-driven customer details.</p>
+              </div>
+            </article>
+            <article class="card flow-card">
+              <span class="flow-index">04</span>
+              <div>
+                <h3>Assign Carrier</h3>
+                <p>Match the load to a trucking company, SCAC, and truck run.</p>
+              </div>
+            </article>
+            <article class="card flow-card">
+              <span class="flow-index">05</span>
+              <div>
+                <h3>Publish Route Sheet</h3>
+                <p>Give the driver a route sheet with stops, contact details, pallets, and cartons.</p>
+              </div>
+            </article>
+          </section>
+
+          <section class="insight-strip">
+            <article class="card insight-card">
+              <p class="eyebrow">Tenant Guardrail</p>
+              <h3>Each company gets its own workspace boundary.</h3>
+              <p>
+                Customers, carriers, drivers, shipments, BOLs, and route runs stay inside the
+                signed-in company. Internal Aeson admins can switch tenants, but regular company
+                users should never see another company's data.
+              </p>
+            </article>
+            <article class="card insight-card">
+              <p class="eyebrow">Workflow Reset</p>
+              <h3>Shipments and routes should be separate records.</h3>
+              <p>
+                First create the shipment, then generate the BOL, then assign the carrier and
+                driver, then publish a route run. That makes status tracking and reporting much
+                easier than the old spreadsheet-linked flow.
+              </p>
+            </article>
+            <article class="card insight-card">
+              <p class="eyebrow">Driver App</p>
+              <h3>Routes should end in a mobile inbox, not a print button.</h3>
+              <p>
+                Once a dispatcher assigns a driver, the route should be pushed to a driver mobile
+                app with stops, delivery windows, maps, POD upload, and live status sync.
+              </p>
+            </article>
+          </section>
+
+          <section id="company-screen" class="card screen">
+            <div class="screen-header">
+              <div>
+                <p class="eyebrow">Choose Company</p>
+                <h3>Company data launcher</h3>
+              </div>
+              <span class="screen-chip">Main Screen</span>
+            </div>
+            <p class="screen-intro">
+              In production, this switcher is for internal Aeson staff only. Regular tenant users
+              sign in directly to their own company workspace and cannot browse other companies.
+            </p>
+            <div class="tenant-banner">
+              <div>
+                <p class="mini-label">Isolation Rule</p>
+                <strong id="tenant-isolation-note">All operational records are scoped to the selected company.</strong>
+                <p>
+                  Customers, carriers, drivers, shipments, BOLs, route runs, and documents all
+                  carry the tenant boundary.
+                </p>
+              </div>
+              <div id="tenant-stats" class="tenant-stats"></div>
+            </div>
+            <div id="company-grid" class="company-grid"></div>
+          </section>
+
+          <div class="screen-pair">
+            <section id="packing-screen" class="card screen">
+              <div class="screen-header">
+                <div>
+                  <p class="eyebrow">Enter Batch ID</p>
+                  <h3>Packing slip selector</h3>
+                </div>
+                <span class="screen-chip">Step 1</span>
+              </div>
+
+              <div class="finder-row">
+                <label class="compact-label">
+                  Use
+                  <select id="batch-mode">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                  </select>
+                </label>
+                <label class="finder-field">
+                  Batch ID
+                  <input id="batch-search" type="text" placeholder="Enter batch ID" value="1058084" />
+                </label>
+                <button id="show-data" class="button button-primary" type="button">Show Data</button>
+              </div>
+
+              <div class="subtle-table-wrap">
+                <table class="subtle-table">
+                  <thead>
+                    <tr>
+                      <th>Batch ID</th>
+                      <th>Customer Number</th>
+                      <th>Customer PO</th>
+                      <th>Order Number</th>
+                      <th>Route Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="selected-shipment-table"></tbody>
+                </table>
+              </div>
+
+              <div class="action-row">
+                <button id="show-form" class="button button-secondary" type="button">Show Form</button>
+                <button id="ship-all" class="button button-secondary" type="button">Mark Route Delivered</button>
+              </div>
+            </section>
+
+            <section id="entry-screen" class="card screen">
+              <div class="screen-header">
+                <div>
+                  <p class="eyebrow">Enter Packing Slip</p>
+                  <h3>Shipment form</h3>
+                </div>
+                <span class="screen-chip">Step 2</span>
+              </div>
+
+              <form id="shipment-form" class="data-form">
+                <label>
+                  Customer Number
+                  <input name="customerNumber" type="text" />
+                </label>
+                <label>
+                  Customer PO
+                  <input name="customerPo" type="text" />
+                </label>
+                <label>
+                  Order Number
+                  <input name="orderNumber" type="text" />
+                </label>
+                <label>
+                  Start Date
+                  <input name="startDate" type="date" />
+                </label>
+                <label>
+                  Cancel Date
+                  <input name="cancelDate" type="date" />
+                </label>
+                <label>
+                  Sales Person
+                  <input name="salesPerson" type="text" />
+                </label>
+                <label>
+                  Route Date
+                  <input name="routeDate" type="date" />
+                </label>
+                <label>
+                  Shipped Date
+                  <input name="shippedDate" type="date" />
+                </label>
+                <label>
+                  Truck
+                  <input name="truck" type="text" />
+                </label>
+                <label>
+                  Units
+                  <input name="units" type="number" />
+                </label>
+                <label>
+                  Cartons
+                  <input name="cartons" type="number" />
+                </label>
+                <label>
+                  Pallets
+                  <input name="pallets" type="number" />
+                </label>
+                <label>
+                  Weight
+                  <input name="weight" type="number" />
+                </label>
+                <label>
+                  Height
+                  <input name="height" type="number" />
+                </label>
+                <label>
+                  Freight Class
+                  <input name="freightClass" type="text" />
+                </label>
+                <label>
+                  Cube
+                  <input name="cube" type="number" />
+                </label>
+                <label>
+                  Comments
+                  <input name="comments" type="text" />
+                </label>
+                <label>
+                  Check Or Cash
+                  <input name="checkOrCash" type="text" />
+                </label>
+                <label>
+                  COD
+                  <input name="cod" type="text" />
+                </label>
+                <label>
+                  Routed Date
+                  <input name="routedDate" type="date" />
+                </label>
+                <label>
+                  Authorization
+                  <input name="authorization" type="text" />
+                </label>
+                <label>
+                  Approved By
+                  <input name="approvedBy" type="text" />
+                </label>
+                <label>
+                  Delivery Date
+                  <input name="deliveryDate" type="date" />
+                </label>
+                <label>
+                  Delivery Start
+                  <input name="deliveryStart" type="time" />
+                </label>
+                <label>
+                  Delivery End
+                  <input name="deliveryEnd" type="time" />
+                </label>
+                <label>
+                  Approval
+                  <input name="approval" type="text" />
+                </label>
+                <label>
+                  SCAC
+                  <input name="scac" type="text" />
+                </label>
+                <label>
+                  Email Subject
+                  <input name="emailSubject" type="text" />
+                </label>
+                <label>
+                  RFQ Subject
+                  <input name="rfqSubject" type="text" />
+                </label>
+                <label>
+                  Department
+                  <input name="dept" type="text" />
+                </label>
+                <label>
+                  Commodity
+                  <input name="commodity" type="text" />
+                </label>
+                <label>
+                  Ship From
+                  <input name="shipFrom" type="text" />
+                </label>
+                <label>
+                  Ship To
+                  <input name="shipTo" type="text" />
+                </label>
+                <label>
+                  Customer Code
+                  <input name="customerCode" type="text" />
+                </label>
+                <label>
+                  Carrier Name
+                  <input name="carrierName" type="text" />
+                </label>
+              </form>
+
+              <div class="action-row">
+                <button id="save-shipment" class="button button-secondary" type="button">Save Shipment</button>
+                <button id="generate-bol" class="button button-primary" type="button">Generate BOL</button>
+              </div>
+            </section>
+          </div>
+
+          <div class="screen-pair">
+            <section id="customer-screen" class="card screen">
+              <div class="screen-header">
+                <div>
+                  <p class="eyebrow">Customer Directory</p>
+                  <h3>CDS customer master</h3>
+                </div>
+                <span id="customer-count" class="screen-chip">0 customers</span>
+              </div>
+
+              <p class="screen-intro">
+                Select a customer from the directory to load ship-to details into the selected shipment.
+              </p>
+
+              <div class="directory-table-wrap">
+                <table class="directory-table">
+                  <thead>
+                    <tr>
+                      <th>Customer #</th>
+                      <th>Name</th>
+                      <th>Address</th>
+                      <th>City</th>
+                      <th>State</th>
+                      <th>Zip</th>
+                      <th>Tel</th>
+                      <th>Tools</th>
+                    </tr>
+                  </thead>
+                  <tbody id="customer-body"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section id="carrier-screen" class="card screen">
+              <div class="screen-header">
+                <div>
+                  <p class="eyebrow">Carrier Directory</p>
+                  <h3>Trucking companies and assignment</h3>
+                </div>
+                <span id="carrier-count" class="screen-chip">0 carriers</span>
+              </div>
+
+              <div class="assignment-panel">
+                <div>
+                  <p class="mini-label">Selected shipment</p>
+                  <strong id="selected-carrier-summary">Batch 1058084 awaiting carrier assignment</strong>
+                </div>
+                <div class="assignment-grid">
+                  <label>
+                    Assign Carrier
+                    <select id="carrier-select"></select>
+                  </label>
+                  <label>
+                    Assign Driver
+                    <select id="driver-select"></select>
+                  </label>
+                  <label>
+                    Truck / Run
+                    <input id="route-truck-input" type="text" placeholder="Truck 1" />
+                  </label>
+                  <label>
+                    Route Label
+                    <input id="route-label-input" type="text" placeholder="RUN-PFE-0407-A" />
+                  </label>
+                </div>
+                <div class="action-row">
+                  <button id="assign-carrier" class="button button-primary" type="button">Save Assignment</button>
+                  <button id="publish-route" class="button button-secondary" type="button">Send Route To Driver</button>
+                </div>
+                <div id="dispatch-checklist" class="dispatch-checklist"></div>
+              </div>
+
+              <div class="directory-table-wrap">
+                <table class="directory-table">
+                  <thead>
+                    <tr>
+                      <th>Code</th>
+                      <th>Company Name</th>
+                      <th>City</th>
+                      <th>State</th>
+                      <th>Tel</th>
+                      <th>Email</th>
+                      <th>Modes</th>
+                      <th>Tools</th>
+                    </tr>
+                  </thead>
+                  <tbody id="carrier-body"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+
+          <div class="screen-pair screen-pair-bottom">
+            <section id="bol-screen" class="card screen">
+              <div class="screen-header">
+                <div>
+                  <p class="eyebrow">All Packing Slip</p>
+                  <h3>BOL queue</h3>
+                </div>
+                <div class="screen-header-actions">
+                  <label class="queue-filter">
+                    Search
+                    <input id="queue-search" type="search" placeholder="Batch, PO, customer" />
+                  </label>
+                  <span class="screen-chip">Step 3</span>
+                </div>
+              </div>
+
+              <div class="queue-summary">
+                <span id="queue-count">0 records</span>
+                <span id="selected-company-label">Pure Food By Estee</span>
+              </div>
+
+              <div class="queue-table-wrap">
+                <table class="queue-table">
+                  <thead>
+                    <tr>
+                      <th>Batch ID</th>
+                      <th>Customer Number</th>
+                      <th>Customer PO</th>
+                      <th>Order Number</th>
+                      <th>Route Date</th>
+                      <th>Carrier</th>
+                      <th>Truck</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="queue-body"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section id="preview-screen" class="card screen">
+              <div class="screen-header">
+                <div>
+                  <p class="eyebrow">Bill Of Lading</p>
+                  <h3>Printable form preview</h3>
+                </div>
+                <span id="bol-number" class="screen-chip screen-chip-accent">BOL-260406-184</span>
+              </div>
+
+              <div class="bol-actions">
+                <button id="print-form" class="button button-primary" type="button">Print This Form</button>
+                <div class="email-row">
+                  <input id="email-address" type="email" placeholder="Enter email address" />
+                  <button id="send-email" class="button button-secondary" type="button">Send</button>
+                </div>
+              </div>
+
+              <article class="document-preview">
+                <header class="document-header">
+                  <div>
+                    <span class="mini-label">Date</span>
+                    <strong id="preview-date">Apr 6, 2026</strong>
+                  </div>
+                  <h4>Bill Of Lading</h4>
+                  <div>
+                    <span class="mini-label">Bill of Lading Number</span>
+                    <strong id="preview-bol-number">BOL-260406-184</strong>
+                  </div>
+                </header>
+
+                <div class="document-grid">
+                  <section class="doc-block">
+                    <span class="mini-label">Ship From</span>
+                    <strong id="preview-ship-from">Pure Food By Estee</strong>
+                    <p id="preview-ship-from-address">1330 Courtney Park Drive East, Mississauga, ON</p>
+                  </section>
+                  <section class="doc-block">
+                    <span class="mini-label">Ship To</span>
+                    <strong id="preview-ship-to">WG Pro-Manufacturing Inc</strong>
+                    <p id="preview-ship-to-address">10 Auction Ln, Brampton, ON</p>
+                  </section>
+                  <section class="doc-block">
+                    <span class="mini-label">Carrier</span>
+                    <strong id="preview-carrier">City Wide Express</strong>
+                    <p>SCAC: <span id="preview-scac">CWEX</span></p>
+                  </section>
+                  <section class="doc-block">
+                    <span class="mini-label">Customer Code</span>
+                    <strong id="preview-customer-code">WG</strong>
+                    <p>Customer Number: <span id="preview-customer-number">WG</span></p>
+                  </section>
+                </div>
+
+                <div class="document-line-items">
+                  <div class="line-item header-row">
+                    <span>Order No.</span>
+                    <span>Pallets</span>
+                    <span>Weight</span>
+                    <span>Commodity</span>
+                    <span>Class</span>
+                  </div>
+                  <div class="line-item">
+                    <span id="preview-order-number">1253062</span>
+                    <span id="preview-pallets">2</span>
+                    <span id="preview-weight">8</span>
+                    <span id="preview-commodity">Houseware</span>
+                    <span id="preview-class">85</span>
+                  </div>
+                </div>
+
+                <div class="document-footer-grid">
+                  <div>
+                    <span class="mini-label">Customer PO</span>
+                    <strong id="preview-customer-po">1253062</strong>
+                  </div>
+                  <div>
+                    <span class="mini-label">Route Date</span>
+                    <strong id="preview-route-date">Apr 7, 2026</strong>
+                  </div>
+                  <div>
+                    <span class="mini-label">Delivery Window</span>
+                    <strong id="preview-delivery-window">Apr 7, 2026 | 08:00 - 12:00</strong>
+                  </div>
+                  <div>
+                    <span class="mini-label">Comments</span>
+                    <strong id="preview-comments">Retail fixture lane ready for print.</strong>
+                  </div>
+                  <div>
+                    <span class="mini-label">Email Subject</span>
+                    <strong id="preview-email-subject">WG PO 1253062 SO 1253062</strong>
+                  </div>
+                  <div>
+                    <span class="mini-label">RFQ Subject</span>
+                    <strong id="preview-rfq-subject">RFQ WG SO 1253062</strong>
+                  </div>
+                  <div>
+                    <span class="mini-label">Department</span>
+                    <strong id="preview-dept">Store Delivery</strong>
+                  </div>
+                  <div>
+                    <span class="mini-label">Approved By</span>
+                    <strong id="preview-approved-by">Dispatch Office</strong>
+                  </div>
+                </div>
+              </article>
+            </section>
+          </div>
+
+          <section id="route-screen" class="card screen screen-full">
+            <div class="screen-header">
+              <div>
+                <p class="eyebrow">Truck Run</p>
+                <h3>Driver route sheet</h3>
+              </div>
+              <div class="route-actions">
+                <button id="print-route" class="button button-primary" type="button">Print Route Sheet</button>
+                <button id="email-carrier" class="button button-secondary" type="button">Email To Carrier</button>
+              </div>
+            </div>
+
+            <div class="route-metrics">
+              <article class="route-metric-card">
+                <span class="mini-label">File Name</span>
+                <strong id="route-file-name">CITY WIDE EXPRESS 6 PALLETS 2 STOPS</strong>
+              </article>
+              <article class="route-metric-card">
+                <span class="mini-label">Run Date</span>
+                <strong id="route-run-date">Apr 7, 2026</strong>
+              </article>
+              <article class="route-metric-card">
+                <span class="mini-label">Carrier</span>
+                <strong id="route-carrier">City Wide Express</strong>
+              </article>
+              <article class="route-metric-card">
+                <span class="mini-label">Truck</span>
+                <strong id="route-truck">Truck 1</strong>
+              </article>
+              <article class="route-metric-card">
+                <span class="mini-label">Driver</span>
+                <strong id="route-driver">Marcus Hill</strong>
+              </article>
+              <article class="route-metric-card">
+                <span class="mini-label">Route Status</span>
+                <strong id="route-status">Accepted</strong>
+              </article>
+              <article class="route-metric-card">
+                <span class="mini-label">Pallets</span>
+                <strong id="route-pallets">6</strong>
+              </article>
+              <article class="route-metric-card">
+                <span class="mini-label">Stops</span>
+                <strong id="route-stops">2</strong>
+              </article>
+            </div>
+
+            <div class="route-table-wrap">
+              <table class="route-table">
+                <thead>
+                  <tr>
+                    <th>Stop</th>
+                    <th>Batch</th>
+                    <th>PO</th>
+                    <th>Customer</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>Phone</th>
+                    <th>Pallets</th>
+                    <th>Cartons</th>
+                    <th>Window</th>
+                  </tr>
+                </thead>
+                <tbody id="route-stops-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="mobile-screen" class="card screen screen-full">
+            <div class="screen-header">
+              <div>
+                <p class="eyebrow">Driver Mobile</p>
+                <h3>Route handoff and sync preview</h3>
+              </div>
+              <span id="mobile-status-chip" class="screen-chip">Awaiting publish</span>
+            </div>
+
+            <div class="mobile-shell">
+              <article class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="phone-screen">
+                  <div class="phone-header">
+                    <p class="eyebrow">Driver App</p>
+                    <h4 id="mobile-driver-name">Assign a driver</h4>
+                    <p id="mobile-route-label">Publish a route to populate the mobile inbox.</p>
+                  </div>
+
+                  <div class="phone-stat-grid">
+                    <article class="phone-stat-card">
+                      <span class="mini-label">Stops</span>
+                      <strong id="mobile-stop-count">0</strong>
+                    </article>
+                    <article class="phone-stat-card">
+                      <span class="mini-label">Pallets</span>
+                      <strong id="mobile-pallet-count">0</strong>
+                    </article>
+                    <article class="phone-stat-card">
+                      <span class="mini-label">Truck</span>
+                      <strong id="mobile-truck">TBD</strong>
+                    </article>
+                    <article class="phone-stat-card">
+                      <span class="mini-label">Status</span>
+                      <strong id="mobile-route-status">Draft</strong>
+                    </article>
+                  </div>
+
+                  <div id="mobile-stop-list" class="mobile-stop-list"></div>
+
+                  <div class="phone-actions">
+                    <button id="simulate-accept" class="button button-secondary" type="button">Simulate Driver Accept</button>
+                    <button id="simulate-delivery" class="button button-secondary" type="button">Simulate Delivery Sync</button>
+                  </div>
+                </div>
+              </article>
+
+              <div class="mobile-side-panel">
+                <article class="sync-card">
+                  <p class="eyebrow">Dispatch Signal</p>
+                  <h4 id="dispatch-state">Ready to assign</h4>
+                  <p id="dispatch-message">
+                    Routes should be created from assigned shipments and pushed to the driver's
+                    device as soon as dispatch confirms the run.
+                  </p>
+                </article>
+
+                <article class="sync-card">
+                  <div class="sync-meta">
+                    <div>
+                      <span class="mini-label">Device</span>
+                      <strong id="mobile-device">Not assigned</strong>
+                    </div>
+                    <div>
+                      <span class="mini-label">Last Sync</span>
+                      <strong id="mobile-last-sync">No sync yet</strong>
+                    </div>
+                  </div>
+                  <div class="sync-meta">
+                    <div>
+                      <span class="mini-label">Push Channel</span>
+                      <strong>Expo Push</strong>
+                    </div>
+                    <div>
+                      <span class="mini-label">Offline Mode</span>
+                      <strong>Queued sync</strong>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="sync-card">
+                  <p class="eyebrow">Sync Feed</p>
+                  <div id="sync-log" class="sync-log"></div>
+                </article>
+              </div>
+            </div>
+          </section>
+        </main>
+      </section>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
