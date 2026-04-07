@@ -273,6 +273,10 @@
                 <label>
                   Customer Number
                   <input name="customerNumber" type="text" />
+                  <small class="field-note">
+                    Enter a customer code or name. If no exact match exists, you can select the closest
+                    match or add a new tenant customer.
+                  </small>
                 </label>
                 <label>
                   Customer PO
@@ -816,6 +820,63 @@
           </section>
         </main>
       </section>
+    </div>
+
+    <div id="customer-modal" class="modal-backdrop" hidden aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="customer-modal-title">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">Customer Match</p>
+            <h3 id="customer-modal-title">Resolve customer entry</h3>
+          </div>
+          <button id="customer-modal-close" class="button button-secondary modal-close" type="button">Close</button>
+        </div>
+
+        <p id="customer-modal-message" class="modal-copy">
+          Select an existing tenant customer or add a new one.
+        </p>
+
+        <div id="customer-suggestion-list" class="modal-suggestion-list"></div>
+
+        <div class="modal-actions">
+          <button id="customer-modal-toggle" class="button button-secondary" type="button">Add New Customer</button>
+        </div>
+
+        <form id="customer-create-form" class="modal-form" hidden>
+          <label>
+            Customer Code
+            <input id="customer-create-code" name="code" type="text" />
+          </label>
+          <label>
+            Customer Name
+            <input id="customer-create-name" name="name" type="text" />
+          </label>
+          <label>
+            Address
+            <input id="customer-create-address" name="address" type="text" />
+          </label>
+          <label>
+            City
+            <input id="customer-create-city" name="city" type="text" />
+          </label>
+          <label>
+            State / Province
+            <input id="customer-create-state" name="state" type="text" />
+          </label>
+          <label>
+            Zip / Postal Code
+            <input id="customer-create-zip" name="zip" type="text" />
+          </label>
+          <label>
+            Phone
+            <input id="customer-create-phone" name="phone" type="text" />
+          </label>
+        </form>
+
+        <div class="modal-actions">
+          <button id="customer-create-save" class="button button-primary" type="button">Save Customer</button>
+        </div>
+      </div>
     </div>
 
     <script src="./app.js"></script>

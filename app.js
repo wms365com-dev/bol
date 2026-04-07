@@ -468,6 +468,7 @@ const refs = {
   workspace: document.querySelector("#workspace"),
   sidebarNav: document.querySelector(".sidebar-nav"),
   form: document.querySelector("#shipment-form"),
+  customerNumberInput: document.querySelector('input[name="customerNumber"]'),
   companyGrid: document.querySelector("#company-grid"),
   selectedShipmentTable: document.querySelector("#selected-shipment-table"),
   customerBody: document.querySelector("#customer-body"),
@@ -498,12 +499,29 @@ const refs = {
   syncLog: document.querySelector("#sync-log"),
   publishRouteButton: document.querySelector("#publish-route"),
   simulateAcceptButton: document.querySelector("#simulate-accept"),
-  simulateDeliveryButton: document.querySelector("#simulate-delivery")
+  simulateDeliveryButton: document.querySelector("#simulate-delivery"),
+  customerModal: document.querySelector("#customer-modal"),
+  customerModalClose: document.querySelector("#customer-modal-close"),
+  customerModalMessage: document.querySelector("#customer-modal-message"),
+  customerSuggestionList: document.querySelector("#customer-suggestion-list"),
+  customerModalToggle: document.querySelector("#customer-modal-toggle"),
+  customerCreateForm: document.querySelector("#customer-create-form"),
+  customerCreateCode: document.querySelector("#customer-create-code"),
+  customerCreateName: document.querySelector("#customer-create-name"),
+  customerCreateAddress: document.querySelector("#customer-create-address"),
+  customerCreateCity: document.querySelector("#customer-create-city"),
+  customerCreateState: document.querySelector("#customer-create-state"),
+  customerCreateZip: document.querySelector("#customer-create-zip"),
+  customerCreatePhone: document.querySelector("#customer-create-phone"),
+  customerCreateSave: document.querySelector("#customer-create-save")
 };
 
 const state = {
   isAuthenticated: false,
   activeScreenId: "overview-screen",
+  customerModalOpen: false,
+  customerModalMode: "suggest",
+  pendingCustomerInput: "",
   selectedCompanyId: companies[0].id,
   selectedShipmentId: "SHP-1058084",
   bolSequence: 186,
@@ -575,6 +593,10 @@ function formatNumber(value) {
   return Number(value || 0).toLocaleString("en-US");
 }
 
+function normalizeSearchText(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
 function buildCustomerAddress(customer) {
   return [customer.address, `${customer.city}, ${customer.state} ${customer.zip}`]
     .filter(Boolean)
@@ -604,9 +626,26 @@ function getSelectedShipment() {
   return shipments.find((shipment) => shipment.id === state.selectedShipmentId) || null;
 }
 
-function getCustomerByCode(code) {
-  const normalized = String(code || "").trim().toLowerCase();
-  return customers.find((customer) => customer.code.toLowerCase() === normalized) || null;
+function getCustomerByCode(code, companyId = state.selectedCompanyId) {
+  const normalized = normalizeSearchText(code);
+  return (
+    customers.find(
+      (customer) => customer.companyIds.includes(companyId) && customer.code.toLowerCase() === normalized
+    ) || null
+  );
+}
+
+function getCustomerByName(name, companyId = state.selectedCompanyId) {
+  const normalized = normalizeSearchText(name);
+  return (
+    customers.find(
+      (customer) => customer.companyIds.includes(companyId) && customer.name.toLowerCase() === normalized
+    ) || null
+  );
+}
+
+function getCustomerByInput(value, companyId = state.selectedCompanyId) {
+  return getCustomerByCode(value, companyId) || getCustomerByName(value, companyId);
 }
 
 function getCarrierById(carrierId) {
@@ -696,10 +735,77 @@ function addSyncEvent(title, detail) {
   });
 }
 
+function levenshteinDistance(leftInput, rightInput) {
+  const left = normalizeSearchText(leftInput);
+  const right = normalizeSearchText(rightInput);
+  if (!left) return right.length;
+  if (!right) return left.length;
+
+  const matrix = Array.from({ length: right.length + 1 }, () => Array(left.length + 1).fill(0));
+
+  for (let row = 0; row <= right.length; row += 1) matrix[row][0] = row;
+  for (let col = 0; col <= left.length; col += 1) matrix[0][col] = col;
+
+  for (let row = 1; row <= right.length; row += 1) {
+    for (let col = 1; col <= left.length; col += 1) {
+      const cost = left[col - 1] === right[row - 1] ? 0 : 1;
+      matrix[row][col] = Math.min(
+        matrix[row - 1][col] + 1,
+        matrix[row][col - 1] + 1,
+        matrix[row - 1][col - 1] + cost
+      );
+    }
+  }
+
+  return matrix[right.length][left.length];
+}
+
+function scoreCustomerMatch(input, customer) {
+  const query = normalizeSearchText(input);
+  const code = normalizeSearchText(customer.code);
+  const name = normalizeSearchText(customer.name);
+  if (!query) return 0;
+
+  let score = 0;
+
+  if (code === query || name === query) score += 100;
+  if (code.startsWith(query) || name.startsWith(query)) score += 35;
+  if (code.includes(query) || name.includes(query)) score += 20;
+  if (query.includes(code) || query.includes(name)) score += 10;
+
+  score += Math.max(0, 18 - levenshteinDistance(query, code));
+  score += Math.max(0, 24 - levenshteinDistance(query, name));
+
+  return score;
+}
+
+function getCustomerSuggestions(input, companyId = state.selectedCompanyId) {
+  const query = normalizeSearchText(input);
+  if (!query) return [];
+
+  return customers
+    .filter((customer) => customer.companyIds.includes(companyId))
+    .map((customer) => ({ customer, score: scoreCustomerMatch(query, customer) }))
+    .filter((entry) => entry.score > 0)
+    .sort((left, right) => right.score - left.score || left.customer.name.localeCompare(right.customer.name))
+    .slice(0, 5)
+    .map((entry) => entry.customer);
+}
+
+function buildCustomerCodeFromInput(input) {
+  const normalized = String(input || "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "");
+
+  if (normalized) return normalized.slice(0, 12);
+  return `CUST${String(getCompanyCustomers().length + 1).padStart(3, "0")}`;
+}
+
 function applyCustomerLookup(shipment, force) {
-  const customer = getCustomerByCode(shipment.customerNumber);
+  const customer = getCustomerByCode(shipment.customerNumber, shipment.companyId);
   if (!customer) return;
   shipment.customerCode = customer.code;
+  shipment.customerNumber = customer.code;
   if (force || !shipment.shipTo) shipment.shipTo = customer.name;
   if (force || !shipment.shipToAddress) shipment.shipToAddress = buildCustomerAddress(customer);
 }
@@ -810,6 +916,127 @@ function setAuthenticated(isAuthenticated) {
     state.activeScreenId = "overview-screen";
   }
   updateScreenVisibility();
+}
+
+function openCustomerModal(inputValue) {
+  state.customerModalOpen = true;
+  state.customerModalMode = "suggest";
+  state.pendingCustomerInput = String(inputValue || "").trim();
+  renderCustomerModal();
+  refs.customerModal.hidden = false;
+  refs.customerModal.setAttribute("aria-hidden", "false");
+}
+
+function closeCustomerModal() {
+  state.customerModalOpen = false;
+  state.customerModalMode = "suggest";
+  state.pendingCustomerInput = "";
+  refs.customerModal.hidden = true;
+  refs.customerModal.setAttribute("aria-hidden", "true");
+}
+
+function populateCustomerCreateForm() {
+  refs.customerCreateCode.value = buildCustomerCodeFromInput(state.pendingCustomerInput);
+  refs.customerCreateName.value = state.pendingCustomerInput;
+  refs.customerCreateAddress.value = "";
+  refs.customerCreateCity.value = "";
+  refs.customerCreateState.value = "";
+  refs.customerCreateZip.value = "";
+  refs.customerCreatePhone.value = "";
+}
+
+function renderCustomerModal() {
+  const suggestions = getCustomerSuggestions(state.pendingCustomerInput);
+  const hasSuggestions = suggestions.length > 0;
+  const addMode = state.customerModalMode === "add";
+
+  refs.customerModalMessage.textContent = hasSuggestions
+    ? `No exact tenant customer match was found for "${state.pendingCustomerInput}". Select the closest match or add a new tenant customer.`
+    : `No tenant customer match was found for "${state.pendingCustomerInput}". Add a new customer to this tenant.`;
+
+  refs.customerSuggestionList.innerHTML = hasSuggestions
+    ? suggestions
+        .map(
+          (customer) => `
+            <article class="modal-suggestion-card">
+              <div>
+                <strong>${customer.name}</strong>
+                <p>${customer.code} | ${customer.address || "No address yet"}</p>
+              </div>
+              <div class="modal-suggestion-meta">
+                <span>${customer.city || "No city"}</span>
+                <span>${customer.state || "No state"}</span>
+                <span>${customer.phone || "No phone"}</span>
+              </div>
+              <div class="modal-actions">
+                <button class="button button-primary" type="button" data-customer-choice="${customer.code}">Use This Customer</button>
+              </div>
+            </article>
+          `
+        )
+        .join("")
+    : `<div class="modal-empty">No close tenant matches yet. Add this customer to the current tenant below.</div>`;
+
+  refs.customerCreateForm.hidden = !addMode;
+  refs.customerCreateSave.hidden = !addMode;
+  refs.customerModalToggle.textContent = addMode ? "Back To Matches" : "Add New Customer";
+
+  if (addMode && !refs.customerCreateCode.value && !refs.customerCreateName.value) {
+    populateCustomerCreateForm();
+  }
+}
+
+function toggleCustomerModalMode() {
+  state.customerModalMode = state.customerModalMode === "add" ? "suggest" : "add";
+  if (state.customerModalMode === "add") populateCustomerCreateForm();
+  renderCustomerModal();
+}
+
+function resolveCustomerForShipment(shipment) {
+  const rawValue = String(shipment.customerNumber || "").trim();
+  if (!rawValue) return true;
+
+  const exactMatch = getCustomerByInput(rawValue, shipment.companyId);
+  if (exactMatch) {
+    shipment.customerNumber = exactMatch.code;
+    applyCustomerLookup(shipment, true);
+    normalizeShipment(shipment);
+    syncDerivedFormFields(shipment);
+    return true;
+  }
+
+  openCustomerModal(rawValue);
+  return false;
+}
+
+function saveNewCustomerFromModal() {
+  const code = String(refs.customerCreateCode.value || "").trim().toUpperCase();
+  const name = String(refs.customerCreateName.value || "").trim();
+  if (!code || !name) {
+    refs.customerModalMessage.textContent = "Customer code and customer name are required to add a new tenant customer.";
+    return;
+  }
+
+  const existing = getCustomerByCode(code, state.selectedCompanyId);
+  if (existing) {
+    applyCustomerToSelected(existing.code);
+    closeCustomerModal();
+    return;
+  }
+
+  customers.push({
+    code,
+    name,
+    address: String(refs.customerCreateAddress.value || "").trim(),
+    city: String(refs.customerCreateCity.value || "").trim(),
+    state: String(refs.customerCreateState.value || "").trim(),
+    zip: String(refs.customerCreateZip.value || "").trim(),
+    phone: String(refs.customerCreatePhone.value || "").trim(),
+    companyIds: [state.selectedCompanyId]
+  });
+
+  applyCustomerToSelected(code);
+  closeCustomerModal();
 }
 
 function setFormValue(name, value) {
@@ -975,7 +1202,7 @@ function renderDispatchChecklist() {
 
   const checks = [
     { label: "Tenant scoped", complete: shipment.companyId === state.selectedCompanyId },
-    { label: "Customer matched", complete: Boolean(getCustomerByCode(shipment.customerNumber)) },
+    { label: "Customer matched", complete: Boolean(getCustomerByCode(shipment.customerNumber, shipment.companyId)) },
     {
       label: "BOL ready",
       complete: Boolean(
@@ -1124,7 +1351,7 @@ function renderRouteSheet() {
 
   refs.routeStopsBody.innerHTML = routeShipments
     .map((item, index) => {
-      const customer = getCustomerByCode(item.customerNumber);
+      const customer = getCustomerByCode(item.customerNumber, item.companyId);
       const cityLine = customer ? `${customer.city}, ${customer.state}` : "Pending city";
       const address = customer ? customer.address : item.shipToAddress || "Pending address";
       const phone = customer?.phone || "N/A";
@@ -1260,6 +1487,7 @@ function selectCompany(companyId) {
   state.selectedShipmentId = getCompanyShipments()[0]?.id || "";
   refs.queueSearch.value = "";
   refreshWorkspace();
+  setActiveScreen("packing-screen");
 }
 
 function selectShipment(shipmentId) {
@@ -1284,6 +1512,11 @@ function showData() {
 
 function saveShipment() {
   saveFormToShipment();
+  const shipment = getSelectedShipment();
+  if (shipment && !resolveCustomerForShipment(shipment)) {
+    refreshDerivedViews();
+    return;
+  }
   refreshDerivedViews();
 }
 
@@ -1300,6 +1533,10 @@ function generateBol() {
   saveFormToShipment();
   const shipment = getSelectedShipment();
   if (!shipment) return;
+  if (!resolveCustomerForShipment(shipment)) {
+    refreshDerivedViews();
+    return;
+  }
 
   shipment.status = "BOL CREATED";
   shipment.bolNumber = shipment.bolNumber || createBolNumber();
@@ -1460,7 +1697,7 @@ function scrollToForm() {
 
 function applyCustomerToSelected(customerCode) {
   const shipment = getSelectedShipment();
-  const customer = getCustomerByCode(customerCode);
+  const customer = shipment ? getCustomerByCode(customerCode, shipment.companyId) : null;
   if (!shipment || !customer) return;
 
   shipment.customerNumber = customer.code;
@@ -1499,6 +1736,20 @@ flowScreenCards.forEach((card) => {
     event.preventDefault();
     setActiveScreen(card.dataset.screenTarget);
   });
+});
+
+refs.customerSuggestionList.addEventListener("click", (event) => {
+  const target = event.target.closest("[data-customer-choice]");
+  if (!target) return;
+  applyCustomerToSelected(target.dataset.customerChoice);
+  closeCustomerModal();
+});
+
+refs.customerModalToggle.addEventListener("click", toggleCustomerModalMode);
+refs.customerModalClose.addEventListener("click", closeCustomerModal);
+refs.customerCreateSave.addEventListener("click", saveNewCustomerFromModal);
+refs.customerModal.addEventListener("click", (event) => {
+  if (event.target === refs.customerModal) closeCustomerModal();
 });
 
 refs.companyGrid.addEventListener("click", (event) => {
@@ -1569,9 +1820,14 @@ refs.form.addEventListener("change", (event) => {
 
   if (event.target instanceof HTMLInputElement && event.target.name === "customerNumber") {
     const shipment = getSelectedShipment();
-    if (shipment && getCustomerByCode(shipment.customerNumber)) {
-      applyCustomerLookup(shipment, true);
-      syncDerivedFormFields(shipment);
+    if (shipment) {
+      if (resolveCustomerForShipment(shipment)) {
+        applyCustomerLookup(shipment, true);
+        syncDerivedFormFields(shipment);
+      } else {
+        refreshDerivedViews();
+        return;
+      }
     }
   }
 
@@ -1656,7 +1912,7 @@ document.querySelector("#simulate-accept").addEventListener("click", simulateDri
 document.querySelector("#simulate-delivery").addEventListener("click", simulateDeliverySync);
 document.querySelector("#login-button").addEventListener("click", () => {
   setAuthenticated(true);
-  setActiveScreen("overview-screen");
+  setActiveScreen("company-screen");
 });
 document.querySelector("#print-form").addEventListener("click", () => window.print());
 document.querySelector("#print-route").addEventListener("click", () => window.print());

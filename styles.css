@@ -281,6 +281,12 @@ body::before {
   color: var(--muted);
 }
 
+.field-note {
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: #6b7c90;
+}
+
 .login-form-grid input,
 .data-form input,
 .data-form select,
@@ -1041,6 +1047,128 @@ body::before {
   gap: 10px;
 }
 
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 34, 51, 0.56);
+  backdrop-filter: blur(8px);
+}
+
+.modal-card {
+  width: min(760px, 100%);
+  max-height: min(90vh, 900px);
+  overflow: auto;
+  padding: 24px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 30px 80px rgba(15, 34, 51, 0.26);
+}
+
+.modal-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.modal-copy {
+  margin: 0 0 18px;
+}
+
+.modal-suggestion-list {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.modal-suggestion-card {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 18px;
+  background: white;
+  border: 1px solid rgba(22, 50, 74, 0.08);
+}
+
+.modal-suggestion-card strong {
+  display: block;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.modal-suggestion-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.modal-suggestion-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(237, 243, 247, 0.9);
+  color: #375167;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.modal-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.modal-form label {
+  display: grid;
+  gap: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.modal-form input {
+  min-height: 48px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--ink);
+  font: inherit;
+}
+
+.modal-form input:focus {
+  outline: 2px solid rgba(19, 195, 200, 0.18);
+  border-color: rgba(19, 195, 200, 0.54);
+}
+
+.modal-empty {
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(237, 243, 247, 0.8);
+  color: #4e6276;
+}
+
 @media (max-width: 1280px) {
   .login-shell,
   .platform-shell,
@@ -1081,7 +1209,8 @@ body::before {
   .route-metrics,
   .tenant-stats,
   .phone-stat-grid,
-  .sync-meta {
+  .sync-meta,
+  .modal-form {
     grid-template-columns: 1fr;
   }
 
