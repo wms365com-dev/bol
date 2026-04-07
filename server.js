@@ -5,6 +5,7 @@ const path = require("node:path");
 const root = __dirname;
 const host = process.env.HOST || "::";
 const port = Number(process.env.PORT || 3000);
+const dispatchBasePath = "/dispatch";
 
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
@@ -24,8 +25,19 @@ function send(res, statusCode, headers, body) {
   res.end(body);
 }
 
+function normalizeRequestPath(urlPath) {
+  if (urlPath === dispatchBasePath) return `${dispatchBasePath}/`;
+  if (urlPath.startsWith(`${dispatchBasePath}/`)) {
+    const stripped = urlPath.slice(dispatchBasePath.length) || "/";
+    return stripped === "/" ? "/" : stripped;
+  }
+
+  return urlPath;
+}
+
 function resolvePath(urlPath) {
-  const relativePath = urlPath === "/" ? "/index.html" : urlPath;
+  const normalizedPath = normalizeRequestPath(urlPath);
+  const relativePath = normalizedPath === "/" ? "/index.html" : normalizedPath;
   const safePath = path.normalize(relativePath).replace(/^(\.\.[/\\])+/, "");
   const fullPath = path.join(root, safePath);
 
@@ -38,6 +50,11 @@ const server = http.createServer((req, res) => {
 
   if (requestUrl.pathname === "/health") {
     return send(res, 200, { "content-type": "application/json; charset=utf-8" }, JSON.stringify({ ok: true }));
+  }
+
+  if (requestUrl.pathname === dispatchBasePath) {
+    res.writeHead(308, { location: `${dispatchBasePath}/` });
+    return res.end();
   }
 
   if (req.method !== "GET" && req.method !== "HEAD") {
