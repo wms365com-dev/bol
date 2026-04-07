@@ -18,7 +18,7 @@
   </head>
   <body>
     <div class="app-shell">
-      <section class="login-shell">
+      <section id="login-shell" class="login-shell">
         <div class="login-visual card">
           <div class="road-glow"></div>
           <div class="truck-panel">
@@ -67,22 +67,23 @@
         </div>
       </section>
 
-      <section id="workspace" class="platform-shell">
+      <section id="workspace" class="platform-shell" hidden aria-hidden="true">
         <aside class="sidebar">
           <div class="sidebar-brand">
-            <span>ARS</span>
+            <span>WMS</span>
             <small>Freight Ops Platform</small>
           </div>
           <nav class="sidebar-nav" aria-label="Primary">
-            <a href="#company-screen">Company Select</a>
-            <a href="#packing-screen">Packing Slip</a>
-            <a href="#entry-screen">Shipment Form</a>
-            <a href="#customer-screen">Customers</a>
-            <a href="#carrier-screen">Carriers</a>
-            <a href="#bol-screen">BOL Queue</a>
-            <a href="#route-screen">Route Sheet</a>
-            <a href="#mobile-screen">Driver Mobile</a>
-            <a href="#preview-screen">Print Preview</a>
+            <a href="#overview-screen" data-screen-target="overview-screen">Overview</a>
+            <a href="#company-screen" data-screen-target="company-screen">Company Select</a>
+            <a href="#packing-screen" data-screen-target="packing-screen">Packing Slip</a>
+            <a href="#entry-screen" data-screen-target="entry-screen">Shipment Form</a>
+            <a href="#customer-screen" data-screen-target="customer-screen">Customers</a>
+            <a href="#carrier-screen" data-screen-target="carrier-screen">Carriers</a>
+            <a href="#bol-screen" data-screen-target="bol-screen">BOL Queue</a>
+            <a href="#route-screen" data-screen-target="route-screen">Route Sheet</a>
+            <a href="#mobile-screen" data-screen-target="mobile-screen">Driver Mobile</a>
+            <a href="#preview-screen" data-screen-target="preview-screen">Print Preview</a>
           </nav>
           <div class="sidebar-note">
             <p class="eyebrow">Workbook Modules</p>
@@ -107,45 +108,55 @@
             </div>
           </header>
 
-          <section class="flow-strip">
-            <article class="card flow-card">
+          <section id="overview-screen" class="card screen overview-screen">
+            <div class="screen-header">
+              <div>
+                <p class="eyebrow">Workflow Overview</p>
+                <h3>Move through the dispatch flow one step at a time.</h3>
+              </div>
+              <span class="screen-chip">Dashboard</span>
+            </div>
+
+            <div class="overview-stack">
+              <section class="flow-strip">
+            <article class="card flow-card" data-screen-target="company-screen" tabindex="0" role="button">
               <span class="flow-index">01</span>
               <div>
                 <h3>Select Company</h3>
                 <p>Load the right customer portfolio and operational data set first.</p>
               </div>
             </article>
-            <article class="card flow-card">
+            <article class="card flow-card" data-screen-target="entry-screen" tabindex="0" role="button">
               <span class="flow-index">02</span>
               <div>
                 <h3>Create Shipment</h3>
                 <p>Capture the batch, PO, order, freight specs, delivery timing, and department.</p>
               </div>
             </article>
-            <article class="card flow-card">
+            <article class="card flow-card" data-screen-target="preview-screen" tabindex="0" role="button">
               <span class="flow-index">03</span>
               <div>
                 <h3>Generate BOL</h3>
                 <p>Turn the shipment into a printable bill of lading with lookup-driven customer details.</p>
               </div>
             </article>
-            <article class="card flow-card">
+            <article class="card flow-card" data-screen-target="carrier-screen" tabindex="0" role="button">
               <span class="flow-index">04</span>
               <div>
                 <h3>Assign Carrier</h3>
                 <p>Match the load to a trucking company, SCAC, and truck run.</p>
               </div>
             </article>
-            <article class="card flow-card">
+            <article class="card flow-card" data-screen-target="route-screen" tabindex="0" role="button">
               <span class="flow-index">05</span>
               <div>
                 <h3>Publish Route Sheet</h3>
                 <p>Give the driver a route sheet with stops, contact details, pallets, and cartons.</p>
               </div>
             </article>
-          </section>
+              </section>
 
-          <section class="insight-strip">
+              <section class="insight-strip">
             <article class="card insight-card">
               <p class="eyebrow">Tenant Guardrail</p>
               <h3>Each company gets its own workspace boundary.</h3>
@@ -172,6 +183,8 @@
                 app with stops, delivery windows, maps, POD upload, and live status sync.
               </p>
             </article>
+              </section>
+            </div>
           </section>
 
           <section id="company-screen" class="card screen">

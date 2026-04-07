@@ -345,6 +345,10 @@ body::before {
   gap: 18px;
 }
 
+#workspace[hidden] {
+  display: none;
+}
+
 .sidebar {
   background: linear-gradient(180deg, #153049 0%, #0f2335 100%);
   color: white;
@@ -396,7 +400,8 @@ body::before {
 }
 
 .sidebar-nav a:hover,
-.sidebar-nav a:focus-visible {
+.sidebar-nav a:focus-visible,
+.sidebar-nav a.is-active {
   background: rgba(19, 195, 200, 0.16);
   transform: translateX(4px);
 }
@@ -412,10 +417,35 @@ body::before {
   gap: 18px;
 }
 
+.workspace-main > .screen,
+.screen-pair,
+.screen-pair-bottom {
+  display: none;
+}
+
+.workspace-main > .screen.is-active {
+  display: block;
+}
+
+.screen-pair.is-active,
+.screen-pair-bottom.is-active {
+  display: grid;
+}
+
+.screen-pair.is-single,
+.screen-pair-bottom.is-single {
+  grid-template-columns: 1fr;
+}
+
 .workspace-topbar,
 .screen,
 .flow-card {
   padding: 24px;
+}
+
+.overview-stack {
+  display: grid;
+  gap: 18px;
 }
 
 .workspace-topbar h2 {
@@ -468,6 +498,7 @@ body::before {
   grid-template-columns: auto 1fr;
   gap: 16px;
   align-items: start;
+  cursor: pointer;
 }
 
 .flow-index {

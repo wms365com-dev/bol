@@ -464,6 +464,9 @@ const shipments = [
 ];
 
 const refs = {
+  loginShell: document.querySelector("#login-shell"),
+  workspace: document.querySelector("#workspace"),
+  sidebarNav: document.querySelector(".sidebar-nav"),
   form: document.querySelector("#shipment-form"),
   companyGrid: document.querySelector("#company-grid"),
   selectedShipmentTable: document.querySelector("#selected-shipment-table"),
@@ -499,6 +502,8 @@ const refs = {
 };
 
 const state = {
+  isAuthenticated: false,
+  activeScreenId: "overview-screen",
   selectedCompanyId: companies[0].id,
   selectedShipmentId: "SHP-1058084",
   bolSequence: 186,
@@ -517,6 +522,27 @@ const state = {
     }
   ]
 };
+
+const screenIds = [
+  "overview-screen",
+  "company-screen",
+  "packing-screen",
+  "entry-screen",
+  "customer-screen",
+  "carrier-screen",
+  "bol-screen",
+  "preview-screen",
+  "route-screen",
+  "mobile-screen"
+];
+
+const screenNodes = screenIds
+  .map((screenId) => document.querySelector(`#${screenId}`))
+  .filter(Boolean);
+
+const screenGroupNodes = [...document.querySelectorAll(".screen-pair, .screen-pair-bottom")];
+const flowScreenCards = [...document.querySelectorAll(".flow-card[data-screen-target]")];
+const navScreenLinks = [...document.querySelectorAll(".sidebar-nav [data-screen-target]")];
 
 function formatDateLabel(value) {
   if (!value) return "Not scheduled";
@@ -742,6 +768,48 @@ shipments.forEach(normalizeShipment);
 function setText(selector, value) {
   const node = document.querySelector(selector);
   if (node) node.textContent = value;
+}
+
+function updateScreenVisibility() {
+  refs.loginShell.hidden = state.isAuthenticated;
+  refs.workspace.hidden = !state.isAuthenticated;
+  refs.workspace.setAttribute("aria-hidden", String(!state.isAuthenticated));
+
+  screenNodes.forEach((screen) => {
+    const isActive = state.isAuthenticated && screen.id === state.activeScreenId;
+    screen.classList.toggle("is-active", isActive);
+  });
+
+  screenGroupNodes.forEach((group) => {
+    const activeChildren = [...group.querySelectorAll(":scope > .screen.is-active")];
+    group.classList.toggle("is-active", activeChildren.length > 0);
+    group.classList.toggle("is-single", activeChildren.length === 1);
+  });
+
+  navScreenLinks.forEach((link) => {
+    const isActive = state.isAuthenticated && link.dataset.screenTarget === state.activeScreenId;
+    link.classList.toggle("is-active", isActive);
+    if (isActive) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  });
+
+  flowScreenCards.forEach((card) => {
+    card.classList.toggle("is-active", state.isAuthenticated && card.dataset.screenTarget === state.activeScreenId);
+  });
+}
+
+function setActiveScreen(screenId) {
+  if (!screenIds.includes(screenId)) return;
+  state.activeScreenId = screenId;
+  updateScreenVisibility();
+}
+
+function setAuthenticated(isAuthenticated) {
+  state.isAuthenticated = isAuthenticated;
+  if (isAuthenticated && !screenIds.includes(state.activeScreenId)) {
+    state.activeScreenId = "overview-screen";
+  }
+  updateScreenVisibility();
 }
 
 function setFormValue(name, value) {
@@ -1168,6 +1236,7 @@ function refreshWorkspace() {
   syncPreview();
   renderRouteSheet();
   renderMobileScreen();
+  updateScreenVisibility();
 }
 
 function refreshDerivedViews() {
@@ -1183,6 +1252,7 @@ function refreshDerivedViews() {
   syncPreview();
   renderRouteSheet();
   renderMobileScreen();
+  updateScreenVisibility();
 }
 
 function selectCompany(companyId) {
@@ -1209,7 +1279,7 @@ function showData() {
   else if (getCompanyShipments()[0]) state.selectedShipmentId = getCompanyShipments()[0].id;
 
   refreshWorkspace();
-  document.querySelector("#packing-screen").scrollIntoView({ behavior: "smooth", block: "start" });
+  setActiveScreen("packing-screen");
 }
 
 function saveShipment() {
@@ -1235,7 +1305,7 @@ function generateBol() {
   shipment.bolNumber = shipment.bolNumber || createBolNumber();
   shipment.routeStatus = shipment.routeStatus === "DRAFT" ? "READY TO DISPATCH" : shipment.routeStatus;
   refreshWorkspace();
-  document.querySelector("#preview-screen").scrollIntoView({ behavior: "smooth", block: "start" });
+  setActiveScreen("preview-screen");
 }
 
 function saveAssignment(carrierIdOverride) {
@@ -1260,7 +1330,7 @@ function saveAssignment(carrierIdOverride) {
 
   syncDerivedFormFields(shipment);
   refreshWorkspace();
-  document.querySelector("#route-screen").scrollIntoView({ behavior: "smooth", block: "start" });
+  setActiveScreen("route-screen");
 }
 
 function publishRouteToDriver() {
@@ -1305,7 +1375,7 @@ function publishRouteToDriver() {
   );
 
   refreshWorkspace();
-  document.querySelector("#mobile-screen").scrollIntoView({ behavior: "smooth", block: "start" });
+  setActiveScreen("mobile-screen");
 }
 
 function simulateDriverAccept() {
@@ -1385,7 +1455,7 @@ function shipAll() {
 }
 
 function scrollToForm() {
-  document.querySelector("#entry-screen").scrollIntoView({ behavior: "smooth", block: "start" });
+  setActiveScreen("entry-screen");
 }
 
 function applyCustomerToSelected(customerCode) {
@@ -1408,6 +1478,28 @@ function updateButtonState(button, label) {
     button.textContent = original;
   }, 1600);
 }
+
+refs.sidebarNav.addEventListener("click", (event) => {
+  const target = event.target.closest("[data-screen-target]");
+  if (!target) return;
+  event.preventDefault();
+  if (!state.isAuthenticated) return;
+  setActiveScreen(target.dataset.screenTarget);
+});
+
+flowScreenCards.forEach((card) => {
+  card.addEventListener("click", () => {
+    if (!state.isAuthenticated) return;
+    setActiveScreen(card.dataset.screenTarget);
+  });
+
+  card.addEventListener("keydown", (event) => {
+    if (!state.isAuthenticated) return;
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    setActiveScreen(card.dataset.screenTarget);
+  });
+});
 
 refs.companyGrid.addEventListener("click", (event) => {
   const target = event.target.closest("[data-company-id]");
@@ -1563,7 +1655,8 @@ document.querySelector("#publish-route").addEventListener("click", publishRouteT
 document.querySelector("#simulate-accept").addEventListener("click", simulateDriverAccept);
 document.querySelector("#simulate-delivery").addEventListener("click", simulateDeliverySync);
 document.querySelector("#login-button").addEventListener("click", () => {
-  document.querySelector("#workspace").scrollIntoView({ behavior: "smooth", block: "start" });
+  setAuthenticated(true);
+  setActiveScreen("overview-screen");
 });
 document.querySelector("#print-form").addEventListener("click", () => window.print());
 document.querySelector("#print-route").addEventListener("click", () => window.print());
