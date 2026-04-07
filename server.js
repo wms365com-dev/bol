@@ -79,5 +79,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`Aeson Retail Solutions listening on http://${host === "::" ? "localhost" : host}:${port}`);
+  console.log(`WMS 365 Dispatch listening on http://${host === "::" ? "localhost" : host}:${port}`);
 });

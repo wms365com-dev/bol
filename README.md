@@ -1,6 +1,6 @@
-# Aeson Retail Solutions Rebuild
+# WMS 365 Dispatch Rebuild
 
-This workspace now contains a clean modern prototype for rebuilding the Aeson Retail Solutions website and dispatch portal.
+This workspace now contains a clean modern prototype for rebuilding the WMS 365 Dispatch website and dispatch portal.
 
 The current rebuild is based on both:
 

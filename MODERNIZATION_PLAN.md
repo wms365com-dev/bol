@@ -1,4 +1,4 @@
-# Aeson Retail Solutions Modernization Plan
+# WMS 365 Dispatch Modernization Plan
 
 ## Goal
 
@@ -58,7 +58,7 @@ Recommended production onboarding:
 
 Important:
 Tenant users should land directly in their own company workspace.
-Only internal Aeson staff should have a company switcher.
+Only internal WMS 365 staff should have a company switcher.
 
 ## What Should Change
 
@@ -84,7 +84,7 @@ If companies sign up directly, their data cannot mix.
 Recommended model:
 
 - Every business record has a `tenant_id`
-- Users belong to one tenant unless they are internal Aeson admins
+- Users belong to one tenant unless they are internal WMS 365 admins
 - Customers, carriers, shipments, BOLs, route runs, drivers, documents, and notifications are all tenant-scoped
 - Internal staff can switch tenants
 - Tenant users should never see a company picker if they only belong to one tenant
@@ -96,7 +96,7 @@ Tenant separation still needs to be enforced in the database and application log
 ## Recommended Roles
 
 - `platform_admin`
-  - Internal Aeson team, can manage all tenants
+  - Internal WMS 365 team, can manage all tenants
 - `tenant_admin`
   - Manages one company account, users, customers, carriers, and settings
 - `dispatcher`

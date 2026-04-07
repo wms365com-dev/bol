@@ -1,8 +1,8 @@
 {
-  "name": "aesonretailsolutions",
+  "name": "wms365-dispatch",
   "version": "1.0.0",
   "private": true,
-  "description": "Aeson Retail Solutions dispatch prototype",
+  "description": "WMS 365 Dispatch prototype",
   "scripts": {
     "start": "node server.js"
   },

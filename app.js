@@ -128,11 +128,11 @@ const carriers = [
   {
     id: "AESN",
     code: "AESN",
-    name: "Aeson Dedicated Fleet",
+    name: "WMS 365 Dedicated Fleet",
     city: "Brampton",
     state: "ON",
     phone: "4165550144",
-    email: "fleet@aesonretailsolutions.com",
+    email: "fleet@wms365.co",
     scac: "AESN",
     modes: ["FTL", "Store Delivery"],
     companyIds: ["wg", "pure-food"]
@@ -140,11 +140,11 @@ const carriers = [
   {
     id: "AESD",
     code: "AESD",
-    name: "Aeson Drayage",
+    name: "WMS 365 Drayage",
     city: "Brampton",
     state: "ON",
     phone: "4165550166",
-    email: "dray@aesonretailsolutions.com",
+    email: "dray@wms365.co",
     scac: "AESD",
     modes: ["Drayage"],
     companyIds: ["pure-food"]
@@ -446,7 +446,7 @@ const shipments = [
     rfqSubject: "",
     dept: "Dedicated Fleet",
     carrierId: "AESN",
-    carrierName: "Aeson Dedicated Fleet",
+    carrierName: "WMS 365 Dedicated Fleet",
     driverId: "DRV-AESN-01",
     driverName: "Sofia Reed",
     routeLabel: "RUN-WGP-0409-B",
@@ -456,7 +456,7 @@ const shipments = [
     commodity: "Store Shelving",
     shipFrom: "WG Pro-Manufacturing Inc",
     shipFromAddress: "10 Auction Ln, Brampton, ON",
-    shipTo: "Aeson Retail DC - Atlanta",
+    shipTo: "WMS 365 Retail DC - Atlanta",
     shipToAddress: "7500 Riverside Pkwy, Lithia Springs, GA",
     customerCode: "WG",
     bolNumber: "BOL-260406-186"
